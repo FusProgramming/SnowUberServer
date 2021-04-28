@@ -1,7 +1,7 @@
 const { Pool } = require("pg");
 
 const pool = new Pool({
-    user: process.env.PGUSER,
+    user: postgres,
     host: "localhost",
     database: "snowuberdb",
     password: "password",
