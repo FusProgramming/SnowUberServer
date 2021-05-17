@@ -21,14 +21,18 @@ app.get("/getAll", async (req, res) => {
 
 app.post('/api/users', async (request, response) => {
     console.log('A request came in with the body: ' + JSON.stringify(request.body));
-    const { firstname, lastname, emailaddress, password } = request.body;
+    const { firstName, lastName, emailAddress, emailAddress2, userPassword, userPassword2 } = request.body;
     try {
-        const hashedPassword = await bcrypt.hash(password, 12);
+        if(!firstName || !lastName || !emailAddress || !emailAddress2 || !userPassword || !userPassword2 ) {
+            errors.push({ message: "Please enter all fields" });
+        }
+        const hashedPassword = await bcrypt.hash(userPassword, 12);
+        const hashedPassword2 = await bcrypt.hash(userPassword2, 12);
         await db.query(
-            "INSERT INTO users (firstname, lastname, emailaddress, password) values ($1, $2, $3, $4) returning *",
-                [firstname, lastname, emailaddress, hashedPassword]
+            "INSERT INTO users (firstName, lastName, emailAddress, emailAddress2, userPassword, userPassword2) values ($1, $2, $3, $4, $5, $6) returning *",
+                [firstName, lastName, emailAddress, emailAddress2, hashedPassword, hashedPassword2]
             );
-       console.log(firstname, lastname, emailaddress, hashedPassword);
+       console.log(firstName, lastName, emailAddress, emailAddress2, hashedPassword, hashedPassword2);
        return response.sendStatus(200);
     } catch(error) {
         console.error('Something went wrong while creating a new user: ' + error.message);
