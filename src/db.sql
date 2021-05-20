@@ -1,3 +1,5 @@
+CREATE DATABASE snowuberdb;
+
 CREATE TABLE users(
   userId SERIAL,
   firstName VARCHAR(255) NOT NULL,
