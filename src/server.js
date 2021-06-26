@@ -23,21 +23,17 @@ app.get("/getAll", async (req, res) => {
 //----------------------------------------------------------------------------------------------------------------------
 app.post("/login", async (request, response)=> {
     const { emailAddress, userPassword} = request.body;
-
     try {
         const user = await db.query("SELECT * FROM users WHERE emailAddress = $1", [emailAddress]);
-
         if (user.rows.length === 0) {
             return response.sendStatus(401);
         }
-
         const validPassword = await bcrypt.compare(userPassword, user.rows[0].userpassword);
 
         if (!validPassword) {
             return response.status(401).json("Invalid Credential");
         }
-
-        return response.status(401).json(validPassword);
+        return response.status(200).json(validPassword);
 
     } catch(error) {
         console.error(error);
