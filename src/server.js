@@ -59,6 +59,8 @@ app.post('/register', async (request, response) => {
             "INSERT INTO users (firstName, lastName, emailAddress, emailAddress2, userPassword, userPassword2) values ($1, $2, $3, $4, $5, $6) returning *",
             [firstName, lastName, emailAddress, emailAddress2, hashedPassword, hashedPassword]
         );
+        const userToken = jwtGenerator(newUser.rows[0].userid);
+        console.log(userToken);
         return response.sendStatus(200);
     } catch(error) {
         console.error('Something went wrong while creating a new user: ' + error.message);
