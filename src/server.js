@@ -5,6 +5,7 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwtGenerator = require('../utils/jwtGenerator');
 const cors = require("cors");
+const authorize = require("./middleware/AuthHandler");
 
 const clientAppDirectory = path.join(__dirname, '../public', 'build');
 
@@ -17,7 +18,7 @@ app.get("/getAll", async (req, res) => {
     const results = await db.query("select * from testtable");
     console.log(results);
     res.status(200).json({
-        status: "success"
+        status: "successss"
     })
 });
 //----------------------------------------------------------------------------------------------------------------------
@@ -33,6 +34,10 @@ app.post("/login", async (request, response)=> {
         if (!validPassword) {
             return response.status(401).json("Invalid Credential");
         }
+
+        const userToken = jwtGenerator(user.rows[0].userid);
+        console.log(userToken);
+
         return response.status(200).json(validPassword);
 
     } catch(error) {
@@ -59,16 +64,25 @@ app.post('/register', async (request, response) => {
             "INSERT INTO users (firstName, lastName, emailAddress, emailAddress2, userPassword, userPassword2) values ($1, $2, $3, $4, $5, $6) returning *",
             [firstName, lastName, emailAddress, emailAddress2, hashedPassword, hashedPassword]
         );
-        const userToken = jwtGenerator(newUser.rows[0].userid);
-        console.log(userToken);
-        return response.sendStatus(200);
+        const jwtToken = jwtGenerator(newUser.rows[0].userid);
+        console.log(jwtToken);
+        return response.sendStatus(200).json({jwtToken});
     } catch(error) {
         console.error('Something went wrong while creating a new user: ' + error.message);
         return response.sendStatus(400);
     }
-
 });
 
+app.use("/dashboard", require("./routes/dashboard"));
+
+app.post("/verify", authorize, (req, res) => {
+    try {
+        res.json(true);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server error");
+    }
+});
 
 const port = process.env.PORT || 4100;
 app.listen(port, () => console.log(`Server has started on localhost:${port}`));
