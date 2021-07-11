@@ -3,7 +3,7 @@ const authorize = require("../middleware/AuthHandler");
 const db = require("../db");
 
 
-router.post("/UserHomePage", authorize, async (request, response ) => {
+router.post("/", authorize, async (request, response ) => {
     const {firstName} = request.body;
     try {
         const user = await db.query(
