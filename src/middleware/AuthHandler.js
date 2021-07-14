@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 jwtSecret = 'string';
 
-module.exports = function(request, response, next) {
+function AuthHandler(request, response, next) {
     const jwtToken = request.header("token");
     if(!jwtToken) {
         return response.sendStatus(403).json({ msg: "Denied"});
@@ -14,3 +14,5 @@ module.exports = function(request, response, next) {
        return response.sendStatus(401).json({ msg:"invalid token"})
     }
 };
+
+module.exports = AuthHandler;

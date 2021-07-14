@@ -6,6 +6,8 @@ const bcrypt = require('bcryptjs');
 const jwtGenerator = require('./utils/jwtGenerator');
 const cors = require("cors");
 const authorize = require("./middleware/AuthHandler");
+const RegisterRoute = require("./routes/RegistrationPage");
+const LoginRoute = require("./routes/LoginRoute");
 
 const clientAppDirectory = path.join(__dirname, '../public', 'build');
 
@@ -22,34 +24,12 @@ app.get("/getAll", async (req, res) => {
     })
 });
 //----------------------------------------------------------------------------------------------------------------------
-app.post("/login", async (request, response)=> {
-    const { emailAddress, userPassword} = request.body;
-    try {
-        const user = await db.query("SELECT * FROM users WHERE emailAddress = $1", [emailAddress]);
-        if (user.rows.length === 0) {
-            return response.sendStatus(401);
-        }
-        const validPassword = await bcrypt.compare(userPassword, user.rows[0].userpassword);
+app.use("/authentication", LoginRoute);
 
-        if (!validPassword) {
-            return response.status(401).json("Invalid Credential");
-        }
+//----------------------------------------------------------------------------------------------------------------------
+app.use("/authentication", RegisterRoute);
 
-        const userToken = jwtGenerator(user.rows[0].userid);
-        console.log(userToken);
-
-        return response.status(200).json(validPassword);
-
-    } catch(error) {
-        console.error(error);
-        response.status(400).send("Server error");
-    }
-});
-
-//--------------------------------------------------------------------------------------------------------------------------
-
-app.use("/authentication", require("./routes/RegistrationPage"));
-
+//----------------------------------------------------------------------------------------------------------------------
 app.use("/dashboard", require("./routes/dashboard"));
 
 app.post("/verify", authorize, (req, res) => {
