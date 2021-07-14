@@ -3,6 +3,7 @@ const app = express.Router();
 const bcrypt = require('bcryptjs');
 const db = require("../db");
 const jwtGenerator = require('../utils/jwtGenerator');
+const authorize = require("../middleware/AuthHandler");
 
 app.post('/register', async (request, response) => {
     console.log('A request came in with the body: ' + JSON.stringify(request.body));
@@ -21,13 +22,12 @@ app.post('/register', async (request, response) => {
             [firstName, lastName, emailAddress, emailAddress2, hashedPassword, hashedPassword]
         );
         const jwtToken = jwtGenerator(newUser.rows[0].userid);
-        return await response.json({ jwtToken}).sendStatus(200);
+        return await response.json({ jwtToken})
     } catch(error) {
         console.error('Something went wrong while creating a new user: ' + error.message);
         return response.sendStatus(400);
     }
 });
-
 
 
 

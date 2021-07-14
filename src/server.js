@@ -29,18 +29,8 @@ app.use("/authentication", LoginRoute);
 //----------------------------------------------------------------------------------------------------------------------
 app.use("/authentication", RegisterRoute);
 
-//----------------------------------------------------------------------------------------------------------------------
-app.use("/dashboard", require("./routes/dashboard"));
 
-app.post("/verify", authorize, (req, res) => {
-    try {
 
-        res.json(true);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Server error");
-    }
-});
 
 const port = process.env.PORT || 4100;
 app.listen(port, () => console.log(`Server has started on localhost:${port}`));
